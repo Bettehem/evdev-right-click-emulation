@@ -1,8 +1,9 @@
 CC := gcc
 XFLAGS := -Wall -std=c11 -D_POSIX_C_SOURCE=199309L
-LIBRARIES := -levdev
-INCLUDES := -I/usr/include/libevdev-1.0
-CFLAGS := $(XFLAGS) $(INCLUDES)
+
+# Use pkg-config to get the flags for libevdev
+LIBS := $(shell pkg-config --libs libevdev)
+CFLAGS := $(XFLAGS) $(shell pkg-config --cflags libevdev)
 
 OUTDIR := out
 SOURCES := uinput.c input.c rce.c
@@ -16,7 +17,7 @@ $(OUTDIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $^ $(LIBRARIES) -o $@
+	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
 all: $(TARGET)
 clean:
